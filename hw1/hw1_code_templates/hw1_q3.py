@@ -44,27 +44,60 @@ lambda_vals = [0.01, 0.1, 1, 10, 100]
 # ADD YOUR CODE BELOW
 #####################
 
+ridge_losses = {}
+lasso_losses = {}
+
 for lambda_val in lambda_vals:
 
     # instantiate ridge regression object
+    ridge = MyRidgeRegression(lambda_val)
 
     # call to your CV function to compute mse for each fold
+    losses = my_cross_val(ridge, "mse", X_train, y_train, k=10)
 
     # print mse from CV
+    print("Ridge losses:", losses)
+    print("Mean:", np.mean(losses))
+    print("Std:", np.std(losses))
+    print()
+
+    ridge_losses[lambda_val] = np.mean(losses)
 
     # instantiate lasso object
+    lasso = Lasso(lambda_val)
 
     # call to your CV function to compute mse for each fold
+    losses = my_cross_val(lasso, "mse", X_train, y_train, k=10)
 
     # print mse from CV
+    print("Lasso losses:", losses)
+    print("Mean:", np.mean(losses))
+    print("Std:", np.std(losses))
+    print()
+
+    lasso_losses[lambda_val] = np.mean(losses)
 
 # instantiate ridge regression and lasso objects for best values of lambda
+best_ridge_lambda = sorted(ridge_losses.keys(), key=lambda x : ridge_losses[x])[0]
+
+best_lasso_lambda = sorted(lasso_losses.keys(), key=lambda x : lasso_losses[x])[0]
 
 # fit models using all training data
+ridge = MyRidgeRegression(best_ridge_lambda)
+ridge.fit(X_train, y_train)
+
+lasso = Lasso(best_lasso_lambda)
+lasso.fit(X_train, y_train)
 
 # predict on test data
+ridge_predictions = ridge.predict(X_test)
+lasso_predictions = lasso.predict(X_test)
 
 # compute mse on test data
+ridge_mse = (1 / y_test.shape[0]) * y_test.T @ ridge_predictions
+lasso_mse = (1 / y_test.shape[0]) * y_test.T @ lasso_predictions
 
 # print mse on test data
+print("Ridge test mse:", ridge_mse)
+print("Lasso test mse:", lasso_mse)
 

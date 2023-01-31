@@ -17,9 +17,9 @@ def my_cross_val(model, loss_func, X, y, k=10):
   assert(loss_func in ["mse", "err_rate"])
 
   n, d = X.shape
-  print(n)
 
   # precompute indices for fold partitions
+  np.random.seed(42)
   perm = np.random.permutation(n)
 
   losses = []
@@ -43,9 +43,9 @@ def my_cross_val(model, loss_func, X, y, k=10):
 
     # compute loss
     if loss_func == "mse":
-      loss = (1 / n) * y_test.T @ predictions
+      loss = (1 / y_test.shape[0]) * y_test.T @ predictions
     else:
-      loss = (1 / n) * (y_test != predictions).sum()
+      loss = (1 / y_test.shape[0]) * (y_test != predictions).sum()
     losses.append(loss)
 
   return losses
