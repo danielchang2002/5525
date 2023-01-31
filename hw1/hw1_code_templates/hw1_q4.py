@@ -45,21 +45,47 @@ y_test = y[NUM_TRAIN:]
 # ADD YOUR CODE BELOW
 #####################
 
+# visualize the projected data points to see what lambda values make sense
+lda = MyLDA(0)
+lda.fit(X_train, y_train)
+proj = X_train @ lda.w
+plt.hist(proj[y_train == 1], bins=50, alpha=0.5)
+plt.hist(proj[y_train == 0], bins=50, alpha=0.5)
+plt.show()
+
+lambda_vals = np.arange(-2, 2.1, 0.2)
+
+lda_losses = {}
+
 for lambda_val in lambda_vals:
 
     # instantiate LDA object
+    lda = MyLDA(lambda_val)
 
     # call to your CV function to compute error rates for each fold
+    losses = my_cross_val(lda, "err_rate", X_train, y_train, k=10)
 
     # print error rates from CV
+    print(f"lambda = {lambda_val} losses:", losses)
+    print("Mean:", np.mean(losses))
+    print("Std:", np.std(losses))
+    print()
+    lda_losses[lambda_val] = np.mean(losses)
 
 # instantiate LDA object for best value of lambda
+best_lda_lambda = sorted(lda_losses.keys(), key=lambda x : lda_losses[x])[0]
+print("best lambda:", best_lda_lambda)
+lda = MyLDA(best_lda_lambda)
 
 # fit model using all training data
+lda.fit(X_train, y_train)
 
 # predict on test data
+pred = lda.predict(X_test)
 
 # compute error rate on test data
+err_rate = (1 / X_test.shape[0]) * (y_test != pred).sum()
 
 # print error rate on test data
+print("error rate:", err_rate)
 
