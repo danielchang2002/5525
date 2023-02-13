@@ -43,13 +43,16 @@ y_test = y[NUM_TRAIN:]
 # ADD YOUR CODE BELOW
 #####################
 
-MAX_ITERS = 1000
+MAX_ITERS = 10000
 d = X_train.shape[1]
+np.random.seed(42069)
 
 # Import your CV package here (either your my_cross_val or sci-kit learn )
-from sklearn.metrics import cross_val_score
+from my_cross_val import my_cross_val
 
 eta_vals = [0.000001, 0.00001, 0.0001, 0.001, 0.01]
+
+err_rates = {}
 
 # Logistic Regression
 for eta_val in eta_vals:
@@ -58,16 +61,33 @@ for eta_val in eta_vals:
     logreg = MyLogisticRegression(d, MAX_ITERS, eta_val)
 
     # call to CV function to compute error rates for each fold
-    logreg.fit(X_train, y_train)
+    scores = my_cross_val(logreg, "err_rate", X_train, y_train, k=10)
 
     # print error rates from CV
+    err_rates[eta_val] = scores
+
+columns = [f"F{i}" for i in range(1, 11)]
+
+err_rate_df = pd.DataFrame.from_dict(err_rates, orient="index", columns=columns)
+err_rate_df["Mean"] = err_rate_df.mean(axis=1)
+err_rate_df["SD"] = err_rate_df.std(axis=1)
+err_rate_df.index.name = "eta"
+
+print(err_rate_df)
 
 # instantiate logistic regression object for best value of eta
+best_eta = err_rate_df.sort_values("Mean").index[0]
+print("Best eta:", best_eta)
+logreg = MyLogisticRegression(d, MAX_ITERS, best_eta)
 
 # fit model using all training data
+logreg.fit(X_train, y_train)
 
 # predict on test data
+pred = logreg.predict(X_test)
 
 # compute error rate on test data
+err_rate = (1 / X_test.shape[0]) * (y_test != pred).sum()
 
 # print error rate on test data
+print("Test error rate:", err_rate)

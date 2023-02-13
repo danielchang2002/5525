@@ -10,13 +10,32 @@ class MyLogisticRegression:
         self.fitted = False
 
     def fit(self, X, y):
+        n = X.shape[0]
         self.fitted = True
 
-        z = sigmoid(X @ self.w)
-        print(z)
+        loss = np.inf
+        converged = False
+        num_iters_elapsed = -1
 
-        for i in self.max_iters:
-            pass
+        for i in range(self.max_iters):
+            num_iters_elapsed = i
+            z = sigmoid(X @ self.w)
+            gradient = -(1 / n) * (y - z) @ X
+            self.w -= self.eta * gradient
+            this_loss = self.get_loss(X, y)
+            if loss - this_loss < self.epsilon:
+                converged = True
+                break
+            loss = this_loss
+
+        # if converged:
+        #     print(f"Converged after {num_iters_elapsed} iterations")
+        # else:
+        #     print("bruh you did not converge")
+        # print(f"Loss: {loss}")
+
+    def get_loss(self, X, y):
+        return - np.mean(y * np.log(sigmoid(X @ self.w)) + (1 - y) * np.log(1 - sigmoid(X @ self.w)))
 
     def predict(self, X):
         if not self.fitted: 
