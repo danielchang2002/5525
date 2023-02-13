@@ -43,7 +43,11 @@ y_test = y[NUM_TRAIN:]
 # ADD YOUR CODE BELOW
 #####################
 
+MAX_ITERS = 1000
+d = X_train.shape[1]
+
 # Import your CV package here (either your my_cross_val or sci-kit learn )
+from sklearn.metrics import cross_val_score
 
 eta_vals = [0.000001, 0.00001, 0.0001, 0.001, 0.01]
 
@@ -51,8 +55,10 @@ eta_vals = [0.000001, 0.00001, 0.0001, 0.001, 0.01]
 for eta_val in eta_vals:
 
     # instantiate logistic regression object
+    logreg = MyLogisticRegression(d, MAX_ITERS, eta_val)
 
     # call to CV function to compute error rates for each fold
+    logreg.fit(X_train, y_train)
 
     # print error rates from CV
 
