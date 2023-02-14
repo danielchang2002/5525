@@ -18,10 +18,16 @@ class MyLogisticRegression:
         num_iters_elapsed = -1
 
         for i in range(self.max_iters):
-            num_iters_elapsed = i
+
+            # compute gradient
             z = sigmoid(X @ self.w)
             gradient = -(1 / n) * (y - z) @ X
+
+            # update
             self.w -= self.eta * gradient
+
+            # check for convergence
+            num_iters_elapsed = i
             this_loss = self.get_loss(X, y)
             if loss - this_loss < self.epsilon:
                 converged = True
