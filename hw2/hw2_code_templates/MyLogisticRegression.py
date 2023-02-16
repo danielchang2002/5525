@@ -49,5 +49,5 @@ class MyLogisticRegression:
         return X @ self.w > 0
 
 def sigmoid(a):
-    return 1 / (1 + np.exp(-a))
+    return np.clip(1 / (1 + np.exp(-a)), -1000000, 1000000)
     

@@ -79,6 +79,7 @@ err_rate_df["Mean"] = err_rate_df.mean(axis=1)
 err_rate_df["SD"] = err_rate_df.std(axis=1)
 err_rate_df.index.name = "eta, c"
 print(err_rate_df)
+err_rate_df.to_csv("SVM.csv", float_format='%.5f')
 
 best_hyperparam = err_rate_df.sort_values("Mean").index[0]
 print("Best hyperparam:", best_hyperparam)

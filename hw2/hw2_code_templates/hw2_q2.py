@@ -74,6 +74,7 @@ err_rate_df["SD"] = err_rate_df.std(axis=1)
 err_rate_df.index.name = "eta"
 
 print(err_rate_df)
+err_rate_df.to_csv("logreg.csv", float_format='%.3f')
 
 # instantiate logistic regression object for best value of eta
 best_eta = err_rate_df.sort_values("Mean").index[0]
